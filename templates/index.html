@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background Control</title>
+
+<style>
+:root{
+    --bg:#080b12;
+    --panel:#10151f;
+    --panel2:#151c28;
+    --border:rgba(255,255,255,.08);
+    --text:#f5f7fb;
+    --muted:#8993a5;
+    --blue:#4f8cff;
+    --green:#22c55e;
+    --yellow:#f5b942;
+    --red:#ff5c6c;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:
+        radial-gradient(circle at top right,rgba(79,140,255,.13),transparent 35%),
+        radial-gradient(circle at bottom left,rgba(124,58,237,.10),transparent 30%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,Arial,sans-serif;
+    min-height:100vh;
+}
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    backdrop-filter:blur(18px);
+    background:rgba(8,11,18,.78);
+    border-bottom:1px solid var(--border);
+    padding:18px 20px;
+}
+
+.header-inner{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,#4f8cff,#7c3aed);
+    font-size:21px;
+    box-shadow:0 8px 30px rgba(79,140,255,.25);
+}
+
+.logo h1{
+    margin:0;
+    font-size:20px;
+}
+
+.logo span{
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--red);
+    font-size:13px;
+    font-weight:600;
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 12px var(--red);
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px 18px 50px;
+}
+
+.hero{
+    margin-bottom:22px;
+}
+
+.hero h2{
+    margin:0;
+    font-size:30px;
+    letter-spacing:-.7px;
+}
+
+.hero p{
+    color:var(--muted);
+    margin:7px 0 0;
+    font-size:14px;
+}
+
+.device-card{
+    background:linear-gradient(145deg,rgba(21,28,40,.96),rgba(13,18,27,.96));
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.device-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.device-name{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.phone{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    background:#202938;
+    display:grid;
+    place-items:center;
+    font-size:25px;
+}
+
+.device-name h3{
+    margin:0;
+    font-size:19px;
+}
+
+.device-name small{
+    color:var(--muted);
+    display:block;
+    margin-top:4px;
+}
+
+.offline{
+    color:var(--red);
+    font-size:13px;
+    font-weight:700;
+}
+
+.offline::before{
+    content:"";
+    display:inline-block;
+    width:8px;
+    height:8px;
+    background:var(--red);
+    border-radius:50%;
+    margin-right:7px;
+    box-shadow:0 0 10px var(--red);
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.stat{
+    background:rgba(255,255,255,.035);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:17px;
+    min-height:100px;
+}
+
+.stat-icon{
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+.stat-title{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.stat-value{
+    font-size:16px;
+    font-weight:700;
+    margin-top:5px;
+}
+
+.sections{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.section{
+    background:rgba(16,21,31,.88);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:20px;
+}
+
+.section-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+}
+
+.section-title h3{
+    margin:0;
+    font-size:16px;
+}
+
+.section-title span{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.permission{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+}
+
+.permission:last-child{
+    border-bottom:0;
+}
+
+.permission-left{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.permission-icon{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    background:#1c2431;
+    display:grid;
+    place-items:center;
+    font-size:18px;
+}
+
+.permission-name{
+    font-size:14px;
+    font-weight:600;
+}
+
+.permission-desc{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:3px;
+}
+
+.badge{
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.wait{
+    background:rgba(245,185,66,.12);
+    color:var(--yellow);
+}
+
+.ok{
+    background:rgba(34,197,94,.12);
+    color:var(--green);
+}
+
+.info{
+    background:rgba(79,140,255,.12);
+    color:var(--blue);
+}
+
+.footer{
+    text-align:center;
+    color:#586274;
+    font-size:11px;
+    margin-top:25px;
+}
+
+@media(max-width:700px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .sections{
+        grid-template-columns:1fr;
+    }
+
+    .hero h2{
+        font-size:25px;
+    }
+
+    .device-card{
+        padding:17px;
+        border-radius:20px;
+    }
+}
+
+@media(max-width:420px){
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .stat{
+        min-height:90px;
+        padding:14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <h1>Background Control</h1>
+                <span>Device Management Panel</span>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Çevrimdışı
+        </div>
+
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="hero">
+        <h2>Cihaz Paneli</h2>
+        <p>Bağlı cihazın durumunu ve izinlerini buradan görüntüle.</p>
+    </div>
+
+    <section class="device-card">
+
+        <div class="device-head">
+
+            <div class="device-name">
+                <div class="phone">📱</div>
+                <div>
+                    <h3>Android Cihaz</h3>
+                    <small>BackgroundApp • v1.0</small>
+                </div>
+            </div>
+
+            <div class="offline">Çevrimdışı</div>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-title">Android</div>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">🔋</div>
+                <div class="stat-title">Pil</div>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">🌐</div>
+                <div class="stat-title">İnternet</div>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">📶</div>
+                <div class="stat-title">Bağlantı</div>
+                <div class="stat-value">—</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">📦</div>
+                <div class="stat-title">Uygulama</div>
+                <div class="stat-value">1.0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-icon">🕐</div>
+                <div class="stat-title">Son bağlantı</div>
+                <div class="stat-value">—</div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="sections">
+
+        <section class="section">
+
+            <div class="section-title">
+                <div>🔐</div>
+                <div>
+                    <h3>İzinler</h3>
+                    <span>Cihaz izin durumu</span>
+                </div>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">📷</div>
+                    <div>
+                        <div class="permission-name">Kamera</div>
+                        <div class="permission-desc">Kamera erişimi</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">🎙️</div>
+                    <div>
+                        <div class="permission-name">Mikrofon</div>
+                        <div class="permission-desc">Mikrofon erişimi</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">🔔</div>
+                    <div>
+                        <div class="permission-name">Bildirim erişimi</div>
+                        <div class="permission-desc">Bildirim servisi</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">📞</div>
+                    <div>
+                        <div class="permission-name">Telefon</div>
+                        <div class="permission-desc">Telefon durumu</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+        </section>
+
+        <section class="section">
+
+            <div class="section-title">
+                <div>⚙️</div>
+                <div>
+                    <h3>Sistem</h3>
+                    <span>Arka plan servisleri</span>
+                </div>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">🔄</div>
+                    <div>
+                        <div class="permission-name">Boot / Otomatik başlatma</div>
+                        <div class="permission-desc">Cihaz açılış durumu</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">⚡</div>
+                    <div>
+                        <div class="permission-name">Wake Lock</div>
+                        <div class="permission-desc">Servis çalışma durumu</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">📡</div>
+                    <div>
+                        <div class="permission-name">Ağ bağlantısı</div>
+                        <div class="permission-desc">Sunucu bağlantısı</div>
+                    </div>
+                </div>
+                <span class="badge wait">Bekleniyor</span>
+            </div>
+
+            <div class="permission">
+                <div class="permission-left">
+                    <div class="permission-icon">🟢</div>
+                    <div>
+                        <div class="permission-name">Servis</div>
+                        <div class="permission-desc">Foreground servis</div>
+                    </div>
+                </div>
+                <span class="badge info">Hazır</span>
+            </div>
+
+        </section>
+
+    </div>
+
+    <div class="footer">
+        Background Control • Local Dashboard
+    </div>
+
+</main>
+
+</body>
+</html>o
+

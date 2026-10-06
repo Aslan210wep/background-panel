@@ -1,0 +1,20 @@
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route("/")
+def panel():
+    return render_template("index.html")
+
+@app.route("/api/test-notification", methods=["POST"])
+def test_notification():
+    data = request.get_json(silent=True) or {}
+    print("TEST BILDIRIMI:", data)
+    return {
+        "ok": True,
+        "message": "Test bildirimi sunucuya ulasti",
+        "data": data
+    }, 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
