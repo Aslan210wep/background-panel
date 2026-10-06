@@ -5,8 +5,11 @@ from flask import Flask, request, jsonify, render_template
 app = Flask(__name__)
 logging.basicConfig(filename='server.log', level=logging.INFO)
 
+# Yeni veritabanı dosyası (Eski yapıyı geçersiz kılar)
+DB_NAME = 'database_v2.db'
+
 def init_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS devices (
@@ -47,7 +50,7 @@ def device_status():
         android_version = data.get('android_version', '13')
         connection_type = data.get('connection_type', 'Wi-Fi')
 
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO devices (device_id, status, battery, android_version, connection_type)
@@ -66,7 +69,7 @@ def receive_notification():
         title = data.get('title', '')
         text = data.get('text', '')
 
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute(
             'INSERT INTO notifications (package_name, title, text) VALUES (?, ?, ?)',
@@ -79,7 +82,7 @@ def receive_notification():
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     cursor.execute('SELECT device_id, status, battery, android_version, connection_type, timestamp FROM devices ORDER BY id DESC LIMIT 1')
