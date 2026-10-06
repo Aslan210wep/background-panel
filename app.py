@@ -84,9 +84,11 @@ def get_data():
 
     cursor.execute('SELECT device_id, status, battery, android_version, connection_type, timestamp FROM devices ORDER BY id DESC LIMIT 1')
     row = cursor.fetchone()
-    device = {}
+    
+    # Hem 'device' objesi hem de 'devices' dizisi olarak esnek döndürüyoruz
+    device_data = {}
     if row:
-        device = {
+        device_data = {
             'device_id': row[0],
             'status': row[1],
             'battery': row[2],
@@ -99,7 +101,7 @@ def get_data():
     notifications = [{'package_name': row[0], 'title': row[1], 'text': row[2], 'timestamp': row[3]} for row in cursor.fetchall()]
 
     conn.close()
-    return jsonify({'device': device, 'notifications': notifications}), 200
+    return jsonify({'device': device_data, 'devices': [device_data] if device_data else [], 'notifications': notifications}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
