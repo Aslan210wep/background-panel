@@ -85,7 +85,6 @@ def get_data():
     cursor.execute('SELECT device_id, status, battery, android_version, connection_type, timestamp FROM devices ORDER BY id DESC LIMIT 1')
     row = cursor.fetchone()
     
-    # Hem 'device' objesi hem de 'devices' dizisi olarak esnek döndürüyoruz
     device_data = {}
     if row:
         device_data = {
