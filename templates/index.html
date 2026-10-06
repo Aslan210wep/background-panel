@@ -86,6 +86,7 @@
         </div>
     </div>
 
+    <!-- İzinler Kartı -->
     <div class="card">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
             <span style="font-size: 18px;">🔑</span>
@@ -106,6 +107,14 @@
             <div class="perm-box">
                 <span style="font-size: 13px;">📍 Konum Erişimi</span>
                 <span id="perm-location" class="badge-green">İzin Verildi</span>
+            </div>
+            <div class="perm-box">
+                <span style="font-size: 13px;">📷 Kamera Erişimi</span>
+                <span id="perm-camera" class="badge-green">İzin Verildi</span>
+            </div>
+            <div class="perm-box">
+                <span style="font-size: 13px;">🎙️ Mikrofon Erişimi</span>
+                <span id="perm-mic" class="badge-green">İzin Verildi</span>
             </div>
         </div>
     </div>
@@ -136,6 +145,8 @@
                     if (dev.notif_permission) document.getElementById('perm-notif').innerText = dev.notif_permission;
                     if (dev.bg_permission) document.getElementById('perm-bg').innerText = dev.bg_permission;
                     if (dev.location_permission) document.getElementById('perm-location').innerText = dev.location_permission;
+                    if (dev.camera_permission) document.getElementById('perm-camera').innerText = dev.camera_permission;
+                    if (dev.mic_permission) document.getElementById('perm-mic').innerText = dev.mic_permission;
 
                     const isOnline = dev.status === 'online';
                     const mainStatus = document.getElementById('main-status');

